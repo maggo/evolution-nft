@@ -13,6 +13,7 @@ export default function Home() {
     () => getAccountTokens(address),
     {
       enabled: !!address,
+      retry: false,
     }
   );
 
@@ -29,6 +30,11 @@ export default function Home() {
         }
 
         ul {
+          list-style: none;
+          padding: 0;
+        }
+
+        .tokens {
           display: flex;
           flex-wrap: wrap;
           align-items: center;
@@ -37,53 +43,114 @@ export default function Home() {
           padding: 0;
         }
 
-        li {
+        .tokens li {
           margin: 1rem;
+          text-align: left;
         }
 
         img {
           width: 100%;
           max-width: 360px;
-          margin-bottom: 1rem;
           aspect-ratio: 360 / 520;
+        }
+
+        .id {
+          margin: 0;
         }
 
         .title {
           margin: 0;
+          font-size: 3rem;
+          line-height: 1;
         }
 
         .description {
           margin: 0.5rem 0;
         }
+
+        a {
+          text-decoration: underline;
+        }
+
+        input,
+        button {
+          padding: 0.5rem 1rem;
+        }
+
+        form {
+          margin: 3rem 0;
+        }
+
+        .error {
+          color: hsl(0, 80%, 50%);
+        }
+
+        .meta {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
       `}</style>
       <div className="container">
-        <h1>Revolution</h1>
-        <p>Enter your account address to see your Evolution NFTs</p>
+        <h1>viv3 la evolution!</h1>
+        <ul>
+          <li>
+            1. Get your address from the{" "}
+            <a href="https://viv3.com/balance">VIV3 Balance page</a> (click the
+            Deposit button)
+          </li>
+          <li>2. Add it below and click submit</li>
+          <li>3. ???</li>
+          <li>4. Profit!</li>
+        </ul>
+        <p>
+          Source:{" "}
+          <a href="https://github.com/maggo/evolution-nft">
+            github.com/maggo/evolution-nft
+          </a>
+        </p>
+        <p>
+          NOT affiliated with VIV3 or Ben Mauro, just doing blockchain stuff{" "}
+          {"<3"}
+        </p>
         <form
           onSubmit={async (e) => {
             e.preventDefault();
             const el = e.currentTarget.elements.namedItem(
               "address"
             ) as HTMLInputElement;
-            setAddress(el.value);
+            setAddress(el.value.trim());
           }}
         >
-          <input name="address" type="text" autoFocus />
+          <input
+            name="address"
+            type="text"
+            autoFocus
+            placeholder="0xabcdef1234567890"
+          />
           <button>Submit</button>
         </form>
-        {isError && <p>Ooops error…</p>}
+        {isError && (
+          <div className="error">
+            <p>Ooops there was an error…</p>
+            <p>Maybe the address is wrong, or you just don't own any tokens</p>
+          </div>
+        )}
         {isLoading && <p>Loading…</p>}
         {!!tokens?.length && (
-          <ul>
+          <ul className="tokens">
             {tokens.map((token) => (
-              <li>
+              <li key={token.id}>
                 <img src={token.image} />
-                <p>#{token.id}</p>
+                <div className="meta">
+                  <p>#{token.id}</p>
+                  <p>
+                    Serial number: {token.serialNumber} / {token.total}
+                  </p>
+                </div>
+
                 <h2 className="title">{token.title}</h2>
                 <p className="description">{token.description}</p>
-                <p>
-                  {token.serialNumber} / {token.total}
-                </p>
               </li>
             ))}
           </ul>
