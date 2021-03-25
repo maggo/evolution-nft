@@ -117,7 +117,8 @@ export default function Home() {
           Source:{" "}
           <a href="https://github.com/maggo/evolution-nft">
             github.com/maggo/evolution-nft
-          </a>
+          </a>{" "}
+          by <a href="https://twitter.com/mediaquery">@mediaquery</a>
         </p>
         <p>
           <strong>NOT affiliated with VIV3 or Ben Mauro</strong>, just doing
