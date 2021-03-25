@@ -1,7 +1,8 @@
 import { arg, args, config, decode, script, send } from "@onflow/fcl";
 import { Address } from "@onflow/types";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery } from "react-query";
+import Head from "next/head";
 
 config().put("accessNode.api", "https://access-mainnet-beta.onflow.org");
 
@@ -19,6 +20,9 @@ export default function Home() {
 
   return (
     <>
+      <Head>
+        <title>viv3 la evolution!</title>
+      </Head>
       <style jsx>{`
         .container {
           padding: 3rem;
@@ -110,8 +114,8 @@ export default function Home() {
           </a>
         </p>
         <p>
-          NOT affiliated with VIV3 or Ben Mauro, just doing blockchain stuff{" "}
-          {"<3"}
+          <strong>NOT affiliated with VIV3 or Ben Mauro</strong>, just doing
+          blockchain stuff {"<3"}
         </p>
         <form
           onSubmit={async (e) => {
