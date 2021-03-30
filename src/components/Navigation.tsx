@@ -14,10 +14,9 @@ export function Navigation() {
             <div className="flex-shrink-0">
               <Link href="/">
                 <a>
-                  <Image
+                  <img
                     width={48}
                     height={48}
-                    layout="fixed"
                     className="block rounded-full overflow-hidden"
                     src="/images/happy.png"
                     alt="Revolution"

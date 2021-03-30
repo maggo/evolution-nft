@@ -45,8 +45,8 @@ export function Sales() {
       <h1 className="text-5xl font-black">Latest Sales</h1>
       <p>
         Here you can find an up-to-date list of the latest sales of Evolution
-        cards on VIV3. Click on the token ID to load its metadata or the address
-        to see the full collection
+        cards on VIV3. Click on the token ID to load its metadata or an address
+        to see its collection.
       </p>
       <div className="sticky top-20">
         <DataDisplay>
@@ -126,10 +126,16 @@ export function Sales() {
                       {page.events.map((p) => (
                         <tr key={p.txId}>
                           <TableCell>
-                            {p.blockHeight}
-                            <div className="text-xs text-gray-500">
-                              {p.txId?.substr(0, 10)}
-                            </div>
+                            <a
+                              className="block"
+                              href={`https://flowscan.org/transaction/${p.txId}`}
+                              target="_blank"
+                            >
+                              {p.blockHeight}
+                              <div className="text-xs text-gray-500">
+                                {p.txId?.substr(0, 10)}
+                              </div>
+                            </a>
                           </TableCell>
                           <TableCell>
                             <Token address={p.to} id={p.tokenId} />

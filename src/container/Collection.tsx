@@ -1,6 +1,10 @@
 import { useQuery, useQueryClient } from "react-query";
+import { Badge } from "../components/Badge";
 import { Spinner } from "../components/Spinner";
 import { getAccountTokens, Token } from "../lib/token";
+import Head from "next/head";
+import { FlowscanIcon } from "../icons/FlowscanIcon";
+import Link from "next/link";
 
 export function Collection({ address }) {
   const queryClient = useQueryClient();
@@ -21,8 +25,21 @@ export function Collection({ address }) {
   );
 
   return (
-    <div>
-      <h1 className="text-5xl font-black mb-8">{address}</h1>
+    <div className="space-y-8">
+      <Head>
+        <title>Collection of {address}</title>
+      </Head>
+      <h1 className="text-5xl font-black">Collection of {address}</h1>
+
+      <div>
+        <a href={`https://flowscan.org/account/${address}`}>
+          <Badge
+            label="Open in Flowscan"
+            icon={<FlowscanIcon className="w-4 h-4 mr-1" />}
+          />
+        </a>
+      </div>
+
       {isLoading ? (
         <Spinner />
       ) : !tokens?.length ? (
