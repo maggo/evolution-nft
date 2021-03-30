@@ -12,6 +12,12 @@ setup();
 function MyApp({ Component, pageProps }) {
   return (
     <QueryClientProvider client={queryClient}>
+      <script
+        async
+        defer
+        data-domain="evolution-nft.netlify.app"
+        src="https://plausible.io/js/plausible.js"
+      />
       <Component {...pageProps} />
     </QueryClientProvider>
   );

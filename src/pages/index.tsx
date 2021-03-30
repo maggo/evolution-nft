@@ -7,12 +7,6 @@ import { Sales } from "../container/Sales";
 export default function Home() {
   return (
     <>
-      <script
-        async
-        defer
-        data-domain="evolution-nft.netlify.app"
-        src="https://plausible.io/js/plausible.js"
-      ></script>
       <Navigation />
 
       <Container>
