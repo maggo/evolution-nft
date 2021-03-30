@@ -134,32 +134,38 @@ export function Sales() {
                   )}
                   {data?.pages.map((page, i) => (
                     <React.Fragment key={i}>
-                      {page.events.map((p) => (
-                        <tr key={p.txId}>
-                          <TableCell>
-                            <a
-                              className="block"
-                              href={`https://flowscan.org/transaction/${p.txId}`}
-                              target="_blank"
-                            >
-                              {p.blockHeight}
-                              <div className="text-xs text-gray-500">
-                                {p.txId?.substr(0, 10)}
-                              </div>
-                            </a>
-                          </TableCell>
-                          <TableCell>
-                            <Token address={p.to} id={p.tokenId} />
-                          </TableCell>
-                          <TableCell>{formatFlow(p.price)}</TableCell>
-                          <TableCell>
-                            <Address address={p.from} />
-                          </TableCell>
-                          <TableCell>
-                            <Address address={p.to} />
-                          </TableCell>
+                      {page.events.length ? (
+                        page.events.map((p) => (
+                          <tr key={p.txId}>
+                            <TableCell>
+                              <a
+                                className="block"
+                                href={`https://flowscan.org/transaction/${p.txId}`}
+                                target="_blank"
+                              >
+                                {p.blockHeight}
+                                <div className="text-xs text-gray-500">
+                                  {p.txId?.substr(0, 10)}
+                                </div>
+                              </a>
+                            </TableCell>
+                            <TableCell>
+                              <Token address={p.to} id={p.tokenId} />
+                            </TableCell>
+                            <TableCell>{formatFlow(p.price)}</TableCell>
+                            <TableCell>
+                              <Address address={p.from} />
+                            </TableCell>
+                            <TableCell>
+                              <Address address={p.to} />
+                            </TableCell>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <TableCell colSpan={5}>No new sales…</TableCell>
                         </tr>
-                      ))}
+                      )}
                     </React.Fragment>
                   ))}
                   {isFetchingNextPage && (

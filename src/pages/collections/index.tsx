@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { Container } from "../../components/Container";
 import { Navigation } from "../../components/Navigation";
@@ -7,6 +8,9 @@ export default function CollectionPage() {
 
   return (
     <div>
+      <Head>
+        <title>Collections</title>
+      </Head>
       <Navigation />
       <Container>
         <h1 className="text-5xl font-black text-center mb-8">
