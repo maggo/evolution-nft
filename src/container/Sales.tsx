@@ -1,3 +1,4 @@
+import Head from "next/head";
 import React, { useEffect } from "react";
 import { useInfiniteQuery } from "react-query";
 import { Address } from "../components/Address";
@@ -33,7 +34,11 @@ export function Sales() {
     return () => clearInterval(interval);
   }, []);
 
-  const blocksByline = isFetched && `in last ${data?.pages.length}k blocks`;
+  const blocksByline =
+    isFetched &&
+    `in last ${data?.pages.length}k blocks (approx. ${
+      data?.pages.length * 30
+    }m)`;
   const volume = data?.pages.reduce(
     (_, p) => _ + p.events.reduce((_, e) => _ + e.price, 0),
     0
@@ -42,13 +47,16 @@ export function Sales() {
 
   return (
     <div className="space-y-8">
+      <Head>
+        <title>Latest Evolution Sales</title>
+      </Head>
       <h1 className="text-5xl font-black">Latest Sales</h1>
       <p>
         Here you can find an up-to-date list of the latest sales of Evolution
         cards on VIV3. Click on the token ID to load its metadata or an address
         to see its collection.
       </p>
-      <div className="sticky top-20">
+      <div className="sm:sticky top-20">
         <DataDisplay>
           <DataItem
             title="Number of Sales"
@@ -71,7 +79,7 @@ export function Sales() {
       <div className="flex flex-col">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-            <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+            <div className="sm:shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -166,7 +174,7 @@ export function Sales() {
                           onClick={() => fetchNextPage()}
                           disabled={isFetchingNextPage}
                         >
-                          Load More
+                          Load more sales
                         </button>
                       </TableCell>
                     </tr>

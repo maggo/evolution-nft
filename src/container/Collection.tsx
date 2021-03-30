@@ -29,7 +29,7 @@ export function Collection({ address }) {
       <Head>
         <title>Collection of {address}</title>
       </Head>
-      <h1 className="text-5xl font-black">Collection of {address}</h1>
+      <h1 className="text-5xl font-black break-all">Collection of {address}</h1>
 
       <div>
         <a href={`https://flowscan.org/account/${address}`}>

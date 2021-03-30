@@ -20,11 +20,13 @@ export function Footer() {
         >
           @mediaquery
         </a>{" "}
-        |{" "}
-        <strong className="font-semibold">
-          NOT affiliated with VIV3 or Ben Mauro
-        </strong>
-        , just doing blockchain stuff {"<3"}
+        / maggo#1337 | Flow Address for donations: 0xf6337be8d00d3950 {"<3"}
+        <div>
+          <strong className="font-semibold">
+            NOT affiliated with VIV3 or Ben Mauro
+          </strong>
+          , just doing blockchain stuff!
+        </div>
       </div>
     </Container>
   );
