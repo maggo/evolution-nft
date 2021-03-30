@@ -20,9 +20,6 @@ export function Sales() {
     isFetching,
     refetch,
   } = useInfiniteQuery("activity", getActivity, {
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
     getPreviousPageParam: ({ lastBlock }) => [lastBlock + 1, undefined],
     getNextPageParam({ firstBlock }) {
       return [undefined, firstBlock - 1];
