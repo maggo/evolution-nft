@@ -37,7 +37,7 @@ export function Sales() {
   const blocksByline =
     isFetched &&
     `in last ${data?.pages.length}k blocks (approx. ${
-      data?.pages.length * 30
+      data?.pages.length * 45
     }m)`;
   const volume = data?.pages.reduce(
     (_, p) => _ + p.events.reduce((_, e) => _ + e.price, 0),
@@ -55,6 +55,9 @@ export function Sales() {
         Here you can find an up-to-date list of the latest sales of Evolution
         cards on VIV3. Click on the token ID to load its metadata or an address
         to see its collection.
+        <br />
+        The <abbr title="Time to create a new block">block time</abbr> is about
+        3 seconds and the list refreshes automatically every 10 seconds
       </p>
       <div className="sm:sticky top-20">
         <DataDisplay>
