@@ -8,12 +8,20 @@
     "start": "next start"
   },
   "dependencies": {
-    "@onflow/fcl": "^0.0.67",
+    "@onflow/fcl": "0.0.68-alpha.15",
+    "@onflow/sdk": "0.0.45-alpha.15",
     "@onflow/types": "^0.0.4",
+    "@tailwindcss/forms": "^0.3.2",
+    "@tailwindcss/jit": "^0.1.17",
+    "autoprefixer": "^10.2.5",
+    "classnames": "^2.2.6",
     "next": "10.0.9",
+    "postcss": "^8.2.8",
+    "raw-loader": "^4.0.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-query": "^3.13.0"
+    "react-query": "^3.13.0",
+    "tailwindcss": "^2.0.4"
   },
   "devDependencies": {
     "@types/node": "^14.14.35",
