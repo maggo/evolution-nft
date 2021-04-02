@@ -1,5 +1,8 @@
 import * as fcl from "@onflow/fcl";
 import * as sdk from "@onflow/sdk";
+import { timeout } from "./helpers";
+
+const DEFAULT_TIMEOUT = 10000;
 
 const VIV3_EVENT = {
   contractName: "VIV3",
@@ -26,7 +29,7 @@ export async function getAllEvents(
   from?: number,
   to?: number
 ): Promise<Purchase[]> {
-  const allEvents = await Promise.all([
+  const allEventsPromise = Promise.all([
     eventsHelper({
       ...EVOLUTION_EVENT,
       eventName: "Withdraw",
@@ -46,6 +49,15 @@ export async function getAllEvents(
       to,
     }),
   ]);
+
+  const allEvents = await Promise.race([
+    allEventsPromise,
+    timeout(DEFAULT_TIMEOUT),
+  ]);
+
+  if (!allEvents) throw new Error("TIMEOUT");
+
+  console.log("All Events", allEvents);
 
   const [withdraws, deposits, purchases] = allEvents;
 
@@ -128,6 +140,12 @@ async function eventsHelper(params: EventsHelperProps): Promise<any[]> {
 }
 
 export async function getLatestBlockHeight(): Promise<number> {
-  const blockResponse = await fcl.send(await sdk.build([sdk.getBlock(true)]));
+  const blockPromise = fcl.send(await sdk.build([sdk.getBlock(true)]));
+  const blockResponse = await Promise.race([
+    blockPromise,
+    timeout(DEFAULT_TIMEOUT),
+  ]);
+  if (!blockResponse) throw new Error("TIMEOUT");
+
   return blockResponse.block.height;
 }

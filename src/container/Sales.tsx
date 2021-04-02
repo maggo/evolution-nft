@@ -1,5 +1,6 @@
+import cx from "classnames";
 import Head from "next/head";
-import React, { useEffect } from "react";
+import React, { HTMLProps } from "react";
 import { useInfiniteQuery } from "react-query";
 import { Address } from "../components/Address";
 import { DataDisplay, DataItem } from "../components/DataDisplay";
@@ -7,6 +8,9 @@ import { Spinner } from "../components/Spinner";
 import { getAllEvents, getLatestBlockHeight } from "../lib/events";
 import { formatFlow } from "../lib/formatter";
 import { Token } from "./Token";
+
+const NUM_BLOCKS_TO_REQUEST = 1000;
+const ESTIMATED_BLOCK_TIME = 3;
 
 export function Sales() {
   const {
@@ -18,23 +22,25 @@ export function Sales() {
     isFetchingNextPage,
     hasNextPage,
     isFetching,
+    isError,
     refetch,
+    error,
   } = useInfiniteQuery("activity", getActivity, {
     getPreviousPageParam: ({ lastBlock }) => [lastBlock + 1, undefined],
     getNextPageParam({ firstBlock }) {
       return [undefined, firstBlock - 1];
     },
+    retry: false,
+    refetchInterval: 10000,
   });
 
-  useEffect(() => {
-    const interval = setInterval(() => refetch(), 10000);
-    return () => clearInterval(interval);
-  }, []);
-
   const blocksByline =
+    !isError &&
     isFetched &&
-    `in last ${data?.pages.length}k blocks (approx. ${
-      data?.pages.length * 45
+    `in last ${
+      (data?.pages.length * NUM_BLOCKS_TO_REQUEST) / 1000
+    }k blocks (approx. ${
+      (data?.pages.length * NUM_BLOCKS_TO_REQUEST * ESTIMATED_BLOCK_TIME) / 60
     }m)`;
   const volume = data?.pages.reduce(
     (_, p) => _ + p.events.reduce((_, e) => _ + e.price, 0),
@@ -74,7 +80,8 @@ export function Sales() {
             VIV3
           </a>{" "}
           contracts. The{" "}
-          <abbr title="Time to create a new block">block time</abbr> is about 3
+          <abbr title="Time to create a new block">block time</abbr> is about{" "}
+          {ESTIMATED_BLOCK_TIME}
           seconds and the list refreshes automatically every 10 seconds.
         </p>
       </div>
@@ -84,17 +91,23 @@ export function Sales() {
           <DataItem
             title="Number of Sales"
             byline={blocksByline}
-            value={!isFetched ? "…" : saleCount}
+            value={isError ? "Error" : !isFetched ? "…" : saleCount}
           />
           <DataItem
             title="Volume"
             byline={blocksByline}
-            value={!isFetched ? "…" : formatFlow(volume)}
+            value={isError ? "Error" : !isFetched ? "…" : formatFlow(volume)}
           />
           <DataItem
             title="Average Price"
             byline={blocksByline}
-            value={!isFetched ? "…" : formatFlow(volume / saleCount)}
+            value={
+              isError
+                ? "Error"
+                : !isFetched
+                ? "…"
+                : formatFlow(volume / saleCount)
+            }
           />
         </DataDisplay>
       </div>
@@ -138,75 +151,99 @@ export function Sales() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {((!isFetched && isLoading) || isFetchingPreviousPage) && (
+                  {isError ? (
                     <tr>
-                      <TableCell colSpan={5}>
-                        <Spinner />
-                      </TableCell>
-                    </tr>
-                  )}
-                  {!isLoading && !data?.pages.length && (
-                    <tr>
-                      <TableCell colSpan={5}>
-                        No Sales found in the last 1000 blocks…
-                      </TableCell>
-                    </tr>
-                  )}
-                  {data?.pages.map((page, i) => (
-                    <React.Fragment key={i}>
-                      {page.events.length ? (
-                        page.events.map((p) => (
-                          <tr key={p.txId}>
-                            <TableCell>
-                              <a
-                                className="block"
-                                href={`https://flowscan.org/transaction/${p.txId}`}
-                                target="_blank"
-                              >
-                                {p.blockHeight}
-                                <div className="text-xs text-gray-500">
-                                  {p.txId?.substr(0, 10)}
-                                </div>
-                              </a>
-                            </TableCell>
-                            <TableCell>
-                              <Token address={p.to} id={p.tokenId} />
-                            </TableCell>
-                            <TableCell>{formatFlow(p.price)}</TableCell>
-                            <TableCell>
-                              <Address address={p.from} />
-                            </TableCell>
-                            <TableCell>
-                              <Address address={p.to} />
-                            </TableCell>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <TableCell colSpan={5}>No new sales…</TableCell>
-                        </tr>
-                      )}
-                    </React.Fragment>
-                  ))}
-                  {isFetchingNextPage && (
-                    <tr>
-                      <TableCell colSpan={5}>
-                        <Spinner />
-                      </TableCell>
-                    </tr>
-                  )}
-                  {hasNextPage && (
-                    <tr>
-                      <TableCell colSpan={5}>
+                      <TableCell colSpan={5} variant="error">
+                        Whoops… there was an error: <code>{error}</code>. You
+                        can try{" "}
                         <button
-                          className=" text-white text-base py-1.5 px-4 rounded-md bg-indigo-500 hover:bg-indigo-600 transition-colors disabled:bg-indigo-300"
-                          onClick={() => fetchNextPage()}
-                          disabled={isFetchingNextPage}
+                          className="underline hover:no-underline"
+                          onClick={() => refetch()}
                         >
-                          Load more sales
+                          refreshing
                         </button>
                       </TableCell>
                     </tr>
+                  ) : (
+                    <>
+                      {((!isFetched && isLoading) ||
+                        isFetchingPreviousPage) && (
+                        <tr>
+                          <TableCell colSpan={5}>
+                            <Spinner />
+                          </TableCell>
+                        </tr>
+                      )}
+                      {isFetched && !data?.pages.length && (
+                        <tr>
+                          <TableCell colSpan={5}>
+                            No Sales found in the last {NUM_BLOCKS_TO_REQUEST}{" "}
+                            blocks…
+                          </TableCell>
+                        </tr>
+                      )}
+                      {data?.pages.map(
+                        ({ events, firstBlock, lastBlock }, i) => (
+                          <React.Fragment key={i}>
+                            {events.length ? (
+                              events.map((p) => (
+                                <tr key={p.txId}>
+                                  <TableCell>
+                                    <a
+                                      className="block"
+                                      href={`https://flowscan.org/transaction/${p.txId}`}
+                                      target="_blank"
+                                    >
+                                      {p.blockHeight}
+                                      <div className="text-xs text-gray-500">
+                                        {p.txId?.substr(0, 10)}
+                                      </div>
+                                    </a>
+                                  </TableCell>
+                                  <TableCell>
+                                    <Token address={p.to} id={p.tokenId} />
+                                  </TableCell>
+                                  <TableCell>{formatFlow(p.price)}</TableCell>
+                                  <TableCell>
+                                    <Address address={p.from} />
+                                  </TableCell>
+                                  <TableCell>
+                                    <Address address={p.to} />
+                                  </TableCell>
+                                </tr>
+                              ))
+                            ) : (
+                              <tr>
+                                <TableCell colSpan={5}>
+                                  No sales in range <code>{firstBlock}</code> –{" "}
+                                  <code>{lastBlock}</code>
+                                </TableCell>
+                              </tr>
+                            )}
+                          </React.Fragment>
+                        )
+                      )}
+                      {isFetchingNextPage && (
+                        <tr>
+                          <TableCell colSpan={5}>
+                            <Spinner />
+                          </TableCell>
+                        </tr>
+                      )}
+                      {hasNextPage && (
+                        <tr>
+                          <TableCell colSpan={5}>
+                            <button
+                              className=" text-white text-base py-1.5 px-4 rounded-md bg-indigo-500 hover:bg-indigo-600 transition-colors disabled:bg-indigo-300"
+                              onClick={() => fetchNextPage()}
+                              disabled={isFetchingNextPage}
+                            >
+                              Load more sales
+                            </button>
+                          </TableCell>
+                        </tr>
+                      )}
+                    </>
                   )}
                 </tbody>
               </table>
@@ -225,12 +262,14 @@ async function getActivity({
 }) {
   const lastBlock = lastBlockHeight || (await getLatestBlockHeight());
   // Make sure that firstBlock <= lastBlock
-  const firstBlock = Math.min(firstBlockHeight ?? lastBlock - 1000, lastBlock);
+  const firstBlock = Math.min(
+    firstBlockHeight ?? lastBlock - NUM_BLOCKS_TO_REQUEST,
+    lastBlock
+  );
 
   console.log("Getting purchases for", firstBlock, lastBlock);
 
   const events = await getAllEvents(firstBlock, lastBlock);
-  if (!events?.length) return null;
 
   return {
     firstBlock,
@@ -250,6 +289,19 @@ function TableHead({ children }) {
   );
 }
 
-function TableCell(props) {
-  return <td className="px-6 py-4 whitespace-nowrap" {...props} />;
+interface TableCellProps extends HTMLProps<HTMLTableCellElement> {
+  variant?: "error";
+}
+
+function TableCell({ className, variant, ...props }: TableCellProps) {
+  return (
+    <td
+      className={cx(
+        `px-6 py-4 whitespace-nowrap`,
+        variant === "error" && "bg-red-100",
+        className
+      )}
+      {...props}
+    />
+  );
 }
