@@ -147,5 +147,7 @@ export async function getLatestBlockHeight(): Promise<number> {
   ]);
   if (!blockResponse) throw new Error("TIMEOUT");
 
+  console.log(blockResponse);
+
   return blockResponse.block.height;
 }

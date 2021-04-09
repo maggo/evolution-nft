@@ -9,7 +9,7 @@ import { getAllEvents, getLatestBlockHeight } from "../lib/events";
 import { formatFlow } from "../lib/formatter";
 import { Token } from "./Token";
 
-const NUM_BLOCKS_TO_REQUEST = 1000;
+const NUM_BLOCKS_TO_REQUEST = 250;
 const ESTIMATED_BLOCK_TIME = 3;
 
 export function Sales() {
@@ -154,8 +154,8 @@ export function Sales() {
                   {isError ? (
                     <tr>
                       <TableCell colSpan={5} variant="error">
-                        Whoops… there was an error: <code>{error}</code>. You
-                        can try{" "}
+                        Whoops… there was an error:{" "}
+                        <code>{(error as any).message}</code>. You can try{" "}
                         <button
                           className="underline hover:no-underline"
                           onClick={() => refetch()}
@@ -263,7 +263,7 @@ async function getActivity({
   const lastBlock = lastBlockHeight || (await getLatestBlockHeight());
   // Make sure that firstBlock <= lastBlock
   const firstBlock = Math.min(
-    firstBlockHeight ?? lastBlock - NUM_BLOCKS_TO_REQUEST,
+    firstBlockHeight ?? lastBlock - NUM_BLOCKS_TO_REQUEST + 1,
     lastBlock
   );
 
